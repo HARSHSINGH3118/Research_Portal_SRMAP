@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { requireAuth } from "../middlewares/auth.middleware";
 import { EventModel } from "../models/event.model";
 import { PaperModel } from "../models/paper.model";
@@ -13,7 +13,7 @@ export const adminRouter = Router();
    Route: GET /api/admin/stats
    Used on: /dashboard/coordinator (main overview)
 ========================================================== */
-adminRouter.get("/admin/stats", requireAuth(["coordinator"]), async (_req, res) => {
+adminRouter.get("/admin/stats", requireAuth(["coordinator"]), async (_req: Request, res: Response) => {
   try {
     const [totalUsers, totalEvents, totalPapers, totalReviews] = await Promise.all([
       UserModel.countDocuments(),
@@ -49,7 +49,7 @@ adminRouter.get("/admin/stats", requireAuth(["coordinator"]), async (_req, res) 
    Route: GET /api/admin/stats/event/:eventId
    Used on: /dashboard/coordinator/stats?eventId=...
 ========================================================== */
-adminRouter.get("/admin/stats/event/:eventId", requireAuth(["coordinator"]), async (req, res) => {
+adminRouter.get("/admin/stats/event/:eventId", requireAuth(["coordinator"]), async (req: Request, res: Response) => {
   try {
     const { eventId } = req.params;
     const event = await EventModel.findById(eventId);
@@ -102,7 +102,7 @@ adminRouter.get("/admin/stats/event/:eventId", requireAuth(["coordinator"]), asy
    🟢 ACCEPTED PAPERS (Accepted + Export Page)
    Route: GET /api/events/:eventId/accepted
 ========================================================== */
-adminRouter.get("/events/:eventId/accepted", requireAuth(["coordinator"]), async (req, res) => {
+adminRouter.get("/events/:eventId/accepted", requireAuth(["coordinator"]), async (req: Request, res: Response) => {
   try {
     const { eventId } = req.params;
     const papers = await PaperModel.find({ eventId, status: "accepted" })
@@ -121,7 +121,7 @@ adminRouter.get("/events/:eventId/accepted", requireAuth(["coordinator"]), async
    🟢 DOWNLOAD ACCEPTED PAPERS AS EXCEL
    Route: GET /api/events/:eventId/accepted.xlsx
 ========================================================== */
-adminRouter.get("/events/:eventId/accepted.xlsx", requireAuth(["coordinator"]), async (req, res) => {
+adminRouter.get("/events/:eventId/accepted.xlsx", requireAuth(["coordinator"]), async (req: Request, res: Response) => {
   try {
     const { eventId } = req.params;
 
@@ -143,15 +143,17 @@ adminRouter.get("/events/:eventId/accepted.xlsx", requireAuth(["coordinator"]), 
       { header: "Event", key: "Event", width: 25 },
     ];
 
-    papers.forEach((p, idx) => {
+    papers.forEach((p: any, idx: number) => {
+      const author = p.author as any;
+      const eventId = p.eventId as any;
       sheet.addRow({
         SNo: idx + 1,
         PaperTitle: p.title,
         Track: p.track,
-        AuthorName: p.author?.name,
-        AuthorEmail: p.author?.email,
-        ContactNumber: p.author?.contactNumber || "N/A",
-        Event: p.eventId?.title,
+        AuthorName: author?.name,
+        AuthorEmail: author?.email,
+        ContactNumber: author?.contactNumber || "N/A",
+        Event: eventId?.title,
       });
     });
 
@@ -173,7 +175,7 @@ adminRouter.get("/events/:eventId/accepted.xlsx", requireAuth(["coordinator"]), 
    🟢 REVIEWER REMINDERS (Pending Reviews)
    Route: GET /api/admin/reviewers/reminders
 ========================================================== */
-adminRouter.get("/admin/reviewers/reminders", requireAuth(["coordinator"]), async (_req, res) => {
+adminRouter.get("/admin/reviewers/reminders", requireAuth(["coordinator"]), async (_req: Request, res: Response) => {
   try {
     const reviewers = await UserModel.find({ roles: { $in: ["reviewer"] } });
     const reviews = await ReviewModel.find();

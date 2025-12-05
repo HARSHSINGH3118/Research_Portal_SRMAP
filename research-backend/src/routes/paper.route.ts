@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -13,8 +13,8 @@ const PAPERS_DIR = path.join(UPLOADS_ROOT, "papers");
 fs.mkdirSync(PAPERS_DIR, { recursive: true });
 
 const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, PAPERS_DIR),
-  filename: (_req, file, cb) => {
+  destination: (_req: Request, _file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => cb(null, PAPERS_DIR),
+  filename: (_req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
     const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, unique + path.extname(file.originalname));
   },
@@ -28,7 +28,7 @@ paperRouter.post(
   "/upload",
   requireAuth(["author"]),
   upload.single("file"),
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     try {
       const { title, track, eventId } = req.body;
       if (!req.file) return res.status(400).json({ ok: false, message: "No file uploaded" });
@@ -53,7 +53,7 @@ paperRouter.post(
 );
 
 // My submissions (must come before /:paperId route)
-paperRouter.get("/my", requireAuth(["author"]), async (req, res) => {
+paperRouter.get("/my", requireAuth(["author"]), async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.userId;
     const papers = await PaperModel.find({ author: userId }).sort({ createdAt: -1 });
@@ -64,7 +64,7 @@ paperRouter.get("/my", requireAuth(["author"]), async (req, res) => {
 });
 
 // Get a single paper by ID
-paperRouter.get("/:paperId", requireAuth(), async (req, res) => {
+paperRouter.get("/:paperId", requireAuth(), async (req: Request, res: Response) => {
   try {
     const { paperId } = req.params;
     const paper = await PaperModel.findById(paperId)

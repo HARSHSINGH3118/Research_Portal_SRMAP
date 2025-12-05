@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { requireAuth } from "../middlewares/auth.middleware";
 import { ReviewModel } from "../models/review.model";
 import { PaperModel } from "../models/paper.model";
@@ -6,7 +6,7 @@ import { PaperModel } from "../models/paper.model";
 export const reviewRouter = Router();
 
 // Get papers assigned to the current reviewer
-reviewRouter.get("/assigned", requireAuth(["reviewer"]), async (req, res) => {
+reviewRouter.get("/assigned", requireAuth(["reviewer"]), async (req: Request, res: Response) => {
   try {
     const reviewerId = (req as any).user.userId;
     
@@ -43,7 +43,7 @@ reviewRouter.get("/assigned", requireAuth(["reviewer"]), async (req, res) => {
 });
 
 // Reviewer posts a review
-reviewRouter.post("/:paperId", requireAuth(["reviewer"]), async (req, res) => {
+reviewRouter.post("/:paperId", requireAuth(["reviewer"]), async (req: Request, res: Response) => {
   try {
     const { paperId } = req.params;
     const { comments, insights } = req.body;
@@ -62,7 +62,7 @@ reviewRouter.post("/:paperId", requireAuth(["reviewer"]), async (req, res) => {
 });
 
 // Get reviews for a paper
-reviewRouter.get("/:paperId", requireAuth(), async (req, res) => {
+reviewRouter.get("/:paperId", requireAuth(), async (req: Request, res: Response) => {
   const { paperId } = req.params;
   const reviews = await ReviewModel.find({ paper: paperId }).populate("reviewer", "name email");
   res.json({ ok: true, reviews });

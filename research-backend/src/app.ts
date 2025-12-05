@@ -38,6 +38,6 @@ app.use("/uploads", express.static(UPLOADS_ROOT));
   app.use("/api/events", eventRouter);
   app.use("/api", adminRouter);
 
-  app.use((_req, res) => res.status(404).json({ ok: false, message: "Not Found" }));
+  app.use((_req: express.Request, res: express.Response) => res.status(404).json({ ok: false, message: "Not Found" }));
   return app;
 };

@@ -20,11 +20,9 @@ export const requireAuth = (roles?: string[]) => {
       // ✅ attach user info
       (req as any).user = payload;
 
-      // ✅ role-based check (handles both single-role & multi-role users)
+      // ✅ role-based check
       if (roles && roles.length > 0) {
-        const userRoles = Array.isArray(payload.roles)
-          ? payload.roles
-          : [payload.role]; // backward compatibility
+        const userRoles = Array.isArray(payload.roles) ? payload.roles : [];
 
         const hasRole = roles.some((r) => userRoles.includes(r));
         if (!hasRole) {

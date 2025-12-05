@@ -1,10 +1,10 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { registerUser, loginUser } from "../services/auth.service";
 
 export const authRouter = Router();
 
 // Register
-authRouter.post("/register", async (req, res) => {
+authRouter.post("/register", async (req: Request, res: Response) => {
   try {
     const { name, email, password, roles, contactNumber } = req.body;
     const user = await registerUser(name, email, password, roles, contactNumber);
@@ -16,7 +16,7 @@ authRouter.post("/register", async (req, res) => {
 
 
 // Login
-authRouter.post("/login", async (req, res) => {
+authRouter.post("/login", async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const data = await loginUser(email, password);
