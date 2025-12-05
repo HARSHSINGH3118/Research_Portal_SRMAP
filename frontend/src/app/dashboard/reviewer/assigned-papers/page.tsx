@@ -7,6 +7,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from '@/components/ui/Loader';
 import { Card } from '@/components/ui/Card';
+import { toPublicUrl } from '@/lib/utils';
 
 export default function AssignedPapers() {
   const [papers, setPapers] = useState<any[]>([]);
@@ -73,7 +74,7 @@ export default function AssignedPapers() {
                   <div className="flex gap-2">
                     {paper.fileUrl && (
                       <a
-                        href={paper.fileUrl}
+                        href={toPublicUrl(paper.fileUrl)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm text-[#494623] hover:text-[#3a381c] font-medium underline"

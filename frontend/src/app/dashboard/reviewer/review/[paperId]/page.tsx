@@ -7,6 +7,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from '@/components/ui/Loader';
 import { Card } from '@/components/ui/Card';
+import { toPublicUrl } from '@/lib/utils';
 
 export default function ReviewPaper() {
   const params = useParams();
@@ -144,7 +145,7 @@ export default function ReviewPaper() {
           {paper.fileUrl && (
             <div>
               <a
-                href={paper.fileUrl}
+                href={toPublicUrl(paper.fileUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block bg-[#494623] hover:bg-[#3a381c] text-white px-4 py-2 rounded-lg font-medium transition-colors"

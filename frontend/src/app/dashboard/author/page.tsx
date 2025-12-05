@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiGet } from '@/lib/api';
+import { toPublicUrl } from '@/lib/utils';
 
 type EventRow = {
   _id: string;
@@ -202,7 +203,7 @@ export default function AuthorOverview() {
                       <td className="py-2 pr-4">
                         {p.fileUrl ? (
                           <a
-                            href={p.fileUrl}
+                            href={toPublicUrl(p.fileUrl)}
                             target="_blank"
                             rel="noreferrer"
                             className="text-[#494623] hover:underline"
