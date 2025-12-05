@@ -52,12 +52,30 @@ paperRouter.post(
   }
 );
 
-// My submissions
+// My submissions (must come before /:paperId route)
 paperRouter.get("/my", requireAuth(["author"]), async (req, res) => {
   try {
     const userId = (req as any).user.userId;
     const papers = await PaperModel.find({ author: userId }).sort({ createdAt: -1 });
     res.json({ ok: true, papers });
+  } catch (err: any) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+// Get a single paper by ID
+paperRouter.get("/:paperId", requireAuth(), async (req, res) => {
+  try {
+    const { paperId } = req.params;
+    const paper = await PaperModel.findById(paperId)
+      .populate("author", "name email")
+      .populate("eventId", "title");
+    
+    if (!paper) {
+      return res.status(404).json({ ok: false, message: "Paper not found" });
+    }
+    
+    res.json({ ok: true, paper });
   } catch (err: any) {
     res.status(500).json({ ok: false, message: err.message });
   }

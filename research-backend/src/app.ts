@@ -11,6 +11,8 @@ import { authRouter } from "./routes/auth.route";
 import { paperRouter } from "./routes/paper.route";
 import { reviewRouter } from "./routes/review.route";
 import { eventRouter } from "./routes/event.route";
+import { adminRouter } from "./routes/admin.routes";
+
 
 export const createApp = () => {
   const app = express();
@@ -34,6 +36,7 @@ app.use("/uploads", express.static(UPLOADS_ROOT));
   app.use("/api/paper", paperRouter);
   app.use("/api/review", reviewRouter);
   app.use("/api/events", eventRouter);
+  app.use("/api", adminRouter);
 
   app.use((_req, res) => res.status(404).json({ ok: false, message: "Not Found" }));
   return app;
