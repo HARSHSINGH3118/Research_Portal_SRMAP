@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { apiPost } from '@/lib/api';
 import { saveAuthTokens } from '@/lib/auth';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SRMAPLogo from '@/assets/SRMAP-Logo.png';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,7 +20,6 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // clear any stale auth
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
@@ -31,7 +32,6 @@ export default function LoginPage() {
 
         toast.success(`Welcome ${res.user.name || 'User'} 👋`);
 
-        // navigate + hard fallback if soft nav fails (middleware loops etc.)
         setTimeout(() => {
           router.replace('/dashboard');
           setTimeout(() => {
@@ -52,51 +52,114 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="relative flex items-center justify-center min-h-screen overflow-hidden">
       <ToastContainer />
-      <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-sm">
-        <h1 className="text-2xl font-semibold text-center mb-6 text-gray-800">
-          Research Portal Login
-        </h1>
+      
+      <div className="absolute inset-0 bg-gradient-to-br from-[#494623]/5 via-white to-[#494623]/5">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(73,70,35,0.1),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(73,70,35,0.08),transparent_50%)]"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(45deg,transparent_25%,rgba(73,70,35,0.02)_25%,rgba(73,70,35,0.02)_50%,transparent_50%,transparent_75%,rgba(73,70,35,0.02)_75%,rgba(73,70,35,0.02)_100%)] bg-[length:20px_20px] opacity-30"></div>
+      </div>
 
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
-              required
-            />
+      <div className="relative z-10 w-full max-w-md px-6">
+        <div className="backdrop-blur-xl bg-white/70 border border-white/20 rounded-3xl shadow-2xl p-8 md:p-10 transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(73,70,35,0.2)]">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center mb-4">
+              <Image
+                src={SRMAPLogo}
+                alt="SRM University AP Logo"
+                width={96}
+                height={96}
+                className="object-contain"
+                priority
+              />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              Research Portal
+            </h1>
+            <p className="text-sm text-gray-600">Sign in to continue</p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
-              required
-            />
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Email Address
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg className="w-5 h-5 text-[#575221]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                  </svg>
+                </div>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-white/80 backdrop-blur-sm border-2 border-gray-200 rounded-xl focus:border-[#494623] focus:ring-2 focus:ring-[#494623]/20 outline-none transition-all duration-200 text-gray-800 placeholder-gray-400"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg className="w-5 h-5 text-[#494623]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-white/80 backdrop-blur-sm border-2 border-gray-200 rounded-xl focus:border-[#494623] focus:ring-2 focus:ring-[#494623]/20 outline-none transition-all duration-200 text-gray-800 placeholder-gray-400"
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#494623] hover:bg-[#3a381c] text-white py-3.5 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:shadow-[#494623]/30 transform hover:-translate-y-0.5 active:translate-y-0"
+            >
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Logging in...
+                </span>
+              ) : (
+                'Sign In'
+              )}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{' '}
+              <a 
+                href="/register" 
+                className="font-semibold text-[#494623] hover:text-[#3a381c] transition-colors duration-200 underline decoration-2 underline-offset-2"
+              >
+                Register here
+              </a>
+            </p>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg font-medium transition disabled:opacity-50"
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-
-        <p className="text-center text-sm text-gray-600 mt-4">
-          Don’t have an account?{' '}
-          <a href="/register" className="text-orange-600 hover:underline">
-            Register here
-          </a>
-        </p>
+          <div className="mt-8 pt-6 border-t border-gray-200/50">
+            <p className="text-xs text-center text-gray-500">
+              SRM University AP Research Portal
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

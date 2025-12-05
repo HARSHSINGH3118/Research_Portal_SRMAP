@@ -1,29 +1,32 @@
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
+//  Save tokens after login
 export const saveAuthTokens = (accessToken: string, refreshToken?: string) => {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   // LocalStorage for client-side axios + guards
-  localStorage.setItem('accessToken', accessToken);
-  if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+  localStorage.setItem("accessToken", accessToken);
+  if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
 
   // Cookie for middleware/SSR checks (non-HttpOnly; fine for dev)
-  Cookies.set('accessToken', accessToken, {
-    sameSite: 'lax',
-    // secure: true, // uncomment if serving over HTTPS
-    path: '/',
+  Cookies.set("accessToken", accessToken, {
+    sameSite: "lax",
+    // secure: true, // uncomment if using HTTPS
+    path: "/",
   });
 };
 
+//  Clear tokens on logout
 export const clearAuthTokens = () => {
-  if (typeof window === 'undefined') return;
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
-  localStorage.removeItem('user');
-  Cookies.remove('accessToken', { path: '/' });
+  if (typeof window === "undefined") return;
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("user");
+  Cookies.remove("accessToken", { path: "/" });
 };
 
+// ✅ Access helper
 export const getAccessToken = () => {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem('accessToken');
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("accessToken");
 };

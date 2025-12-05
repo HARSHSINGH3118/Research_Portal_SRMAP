@@ -1,179 +1,108 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { apiGet, apiPost } from '@/lib/api';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { apiGet } from "@/lib/api";
+import { Card } from "@/components/ui/Card";
+import Loader from "@/components/ui/Loader";
+import ProtectedRoute from "@/components/ui/ProtectedRoute";
 
 export default function CoordinatorEvents() {
   const [events, setEvents] = useState<any[]>([]);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [date, setDate] = useState('');
-  const [banner, setBanner] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  // ✅ Load all events on page load
-  const fetchEvents = async () => {
-    try {
-      const res = await apiGet('/events');
-      if (res?.ok) {
-        setEvents(res.events);
-      } else {
-        toast.error('Failed to load events');
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error('Error loading events');
-    }
-  };
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const res = await apiGet("/events");
+        setEvents(res?.events || res); // depending on backend return structure
+      } catch (err) {
+        console.error("Error fetching events", err);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchEvents();
   }, []);
 
-  // ✅ Create Event
-  const handleCreateEvent = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title || !date) {
-      toast.error('Title and Date are required');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('description', description);
-    formData.append('date', date);
-    if (banner) formData.append('banner', banner);
-
-    setLoading(true);
-    try {
-      const res = await apiPost('/events/create', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
-      if (res?.ok) {
-        toast.success('Event created successfully!');
-        setTitle('');
-        setDescription('');
-        setDate('');
-        setBanner(null);
-        await fetchEvents();
-      } else {
-        toast.error(res?.message || 'Failed to create event');
-      }
-    } catch (err: any) {
-      console.error('Create event error:', err);
-      toast.error(err?.response?.data?.message || 'Server error');
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (loading) return <Loader />;
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
-      <ToastContainer />
-      <div className="max-w-5xl mx-auto space-y-10">
-        <section className="bg-white p-6 rounded-2xl shadow-md">
-          <h1 className="text-2xl font-semibold mb-6">Create New Event</h1>
-          <form onSubmit={handleCreateEvent} className="grid gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Title
-              </label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 outline-none"
-                placeholder="e.g. SRM AP Research Day"
-                required
-              />
-            </div>
+    <ProtectedRoute allowedRoles={["coordinator"]}>
+      <div className="p-6 space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-gray-800">All Events</h1>
+          <button
+            onClick={() => router.push("/dashboard/coordinator/events/create")}
+            className="bg-[#494623] hover:bg-[#3a381c] text-white px-4 py-2 rounded-lg transition-all font-medium shadow-md hover:shadow-lg"
+          >
+            + Create Event
+          </button>
+        </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
-              </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={3}
-                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 outline-none resize-none"
-                placeholder="Short description of the event"
-              ></textarea>
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Event Date
-                </label>
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 outline-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Banner Image (optional)
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setBanner(e.target.files?.[0] || null)}
-                  className="w-full text-sm text-gray-700"
-                />
-                {banner && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    Selected: {banner.name}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-orange-500 text-white py-2 rounded-lg font-medium hover:bg-orange-600 transition disabled:opacity-50"
-            >
-              {loading ? 'Creating...' : 'Create Event'}
-            </button>
-          </form>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold mb-4">All Events</h2>
-          {events.length === 0 ? (
-            <p className="text-gray-500">No events created yet.</p>
-          ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {events.map((ev) => (
-                <div
-                  key={ev._id}
-                  className="bg-white p-4 rounded-xl shadow-sm border hover:shadow transition"
-                >
-                  <h3 className="text-lg font-medium">{ev.title}</h3>
-                  <p className="text-sm text-gray-600">
-                    {new Date(ev.date).toLocaleDateString()}
-                  </p>
-                  {ev.bannerUrl && (
-                    <img
-                      src={`http://localhost:8080/${ev.bannerUrl}`}
-                      alt={ev.title}
-                      className="mt-2 rounded-lg w-full h-32 object-cover"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+        {/* Events List */}
+        {events.length > 0 ? (
+          <div className="overflow-x-auto bg-white rounded-xl border-2 border-gray-200">
+            <table className="min-w-full text-sm">
+              <thead className="bg-[#494623]/10">
+                <tr>
+                  <th className="px-4 py-3 text-left text-gray-700 font-semibold">Title</th>
+                  <th className="px-4 py-3 text-left text-gray-700 font-semibold">Date</th>
+                  <th className="px-4 py-3 text-left text-gray-700 font-semibold">Description</th>
+                  <th className="px-4 py-3 text-left text-gray-700 font-semibold">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {events.map((event: any) => (
+                  <tr key={event._id} className="border-t border-gray-200 hover:bg-[#494623]/5 transition-colors">
+                    <td className="px-4 py-3 text-gray-800 font-medium">{event.title}</td>
+                    <td className="px-4 py-3 text-gray-600">
+                      {new Date(event.date).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 truncate max-w-xs">
+                      {event.description || "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() =>
+                            router.push(`/dashboard/coordinator/stats?eventId=${event._id}`)
+                          }
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
+                        >
+                          Stats
+                        </button>
+                        <button
+                          onClick={() =>
+                            router.push(`/dashboard/coordinator/assignments?eventId=${event._id}`)
+                          }
+                          className="bg-[#494623] hover:bg-[#3a381c] text-white px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
+                        >
+                          Assignments
+                        </button>
+                        <button
+                          onClick={() =>
+                            router.push(`/dashboard/coordinator/accepted?eventId=${event._id}`)
+                          }
+                          className="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
+                        >
+                          Accepted
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <Card>
+            <p className="text-gray-600">No events found. Create one to begin.</p>
+          </Card>
+        )}
       </div>
-    </main>
+    </ProtectedRoute>
   );
 }

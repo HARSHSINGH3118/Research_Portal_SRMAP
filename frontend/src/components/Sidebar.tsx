@@ -23,16 +23,19 @@ function NavGroup({ title, children }: { title: string; children: React.ReactNod
   );
 }
 
-function NavItem({ href, label }: { href: string; label: string }) {
+function NavItem({ href, label, exact }: { href: string; label: string; exact?: boolean }) {
   const pathname = usePathname();
-  const active = pathname === href || pathname.startsWith(href + '/');
+  const active = exact 
+    ? pathname === href 
+    : pathname === href || pathname.startsWith(href + '/');
+  
   return (
     <Link
       href={href}
-      className={`block px-3 py-2 rounded-lg text-sm ${
+      className={`block px-3 py-2 rounded-lg text-sm transition-colors duration-200 ${
         active
-          ? 'bg-orange-100 text-orange-700 font-medium'
-          : 'text-gray-700 hover:bg-gray-100'
+          ? 'bg-[#494623]/10 text-[#494623] font-semibold border-l-4 border-[#494623]'
+          : 'text-gray-700 hover:bg-[#494623]/5 hover:text-[#494623]'
       }`}
     >
       {label}
@@ -65,7 +68,7 @@ export default function Sidebar() {
     <aside className="w-64 bg-white border-r border-gray-200 p-4 sticky top-0 h-screen">
       {/* Header */}
       <div className="px-3 py-2 mb-4">
-        <div className="text-lg font-semibold text-gray-800">UROP Portal</div>
+        <div className="text-lg font-semibold text-gray-800">SRMAP Research Portal</div>
         <div className="text-xs text-gray-500">
           {user?.name} {user?.roles?.length ? `• ${user.roles.join(', ')}` : ''}
         </div>
@@ -74,14 +77,14 @@ export default function Sidebar() {
       {/* Navigation */}
       <nav className="overflow-y-auto pr-1">
         <NavGroup title="Home">
-          <NavItem href="/dashboard" label="Dashboard Home" />
+          <NavItem href="/dashboard" label="Dashboard Home" exact />
         </NavGroup>
 
         {/* ✅ Author section (removed "My Submissions") */}
         {showAuthor && (
           <NavGroup title="Author">
-            <NavItem href="/dashboard/author" label="Overview" />
-            <NavItem href="/dashboard/author/submit-paper" label="Submit Paper" />
+            <NavItem href="/dashboard/author" label="Overview" exact />
+            <NavItem href="/dashboard/author/submit-paper" label="Submit Paper" exact />
             {/* ❌ Removed My Submissions */}
           </NavGroup>
         )}
@@ -89,7 +92,7 @@ export default function Sidebar() {
         {/* Reviewer section */}
         {showReviewer && (
           <NavGroup title="Reviewer">
-            <NavItem href="/dashboard/reviewer" label="Overview" />
+            <NavItem href="/dashboard/reviewer" label="Overview" exact />
             <NavItem href="/dashboard/reviewer/assigned-papers" label="Assigned Papers" />
           </NavGroup>
         )}
@@ -97,7 +100,7 @@ export default function Sidebar() {
         {/* Coordinator section */}
         {showCoordinator && (
           <NavGroup title="Coordinator">
-            <NavItem href="/dashboard/coordinator" label="Overview" />
+            <NavItem href="/dashboard/coordinator" label="Overview" exact />
             <NavItem href="/dashboard/coordinator/events" label="Manage Events" />
             <NavItem href="/dashboard/coordinator/assignments" label="Assignments" />
             <NavItem href="/dashboard/coordinator/accepted" label="Accepted / Export" />
@@ -111,7 +114,7 @@ export default function Sidebar() {
       <div className="absolute bottom-4 left-0 right-0 px-4">
         <button
           onClick={handleLogout}
-          className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-lg text-sm font-medium"
+          className="w-full bg-[#494623] hover:bg-[#3a381c] text-white py-2 rounded-lg text-sm font-medium transition-colors duration-200"
         >
           Logout
         </button>

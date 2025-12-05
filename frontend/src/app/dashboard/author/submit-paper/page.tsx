@@ -85,7 +85,7 @@ export default function SubmitPaper() {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
+              className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#494623]/20 focus:border-[#494623] outline-none"
               required
             />
           </div>
@@ -96,7 +96,7 @@ export default function SubmitPaper() {
             <select
               value={selectedEvent}
               onChange={(e) => setSelectedEvent(e.target.value)}
-              className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
+              className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#494623]/20 focus:border-[#494623] outline-none"
               required
             >
               <option value="">-- Select Event --</option>
@@ -116,7 +116,7 @@ export default function SubmitPaper() {
               value={track}
               onChange={(e) => setTrack(e.target.value)}
               placeholder="e.g., AI/ML, IoT, Quantum Computing"
-              className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
+              className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#494623]/20 focus:border-[#494623] outline-none"
               required
             />
           </div>
@@ -137,7 +137,7 @@ export default function SubmitPaper() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg font-medium transition disabled:opacity-50"
+            className="w-full bg-[#494623] hover:bg-[#3a381c] text-white py-2 rounded-lg font-medium transition disabled:opacity-50"
           >
             {loading ? 'Submitting...' : 'Submit Paper'}
           </button>

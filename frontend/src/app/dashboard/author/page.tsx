@@ -148,7 +148,7 @@ export default function AuthorOverview() {
                         )}`
                       )
                     }
-                    className="mt-3 w-full text-center bg-orange-500 hover:bg-orange-600 text-white text-sm py-2 rounded-lg"
+                    className="mt-3 w-full text-center bg-[#494623] hover:bg-[#3a381c] text-white text-sm py-2 rounded-lg"
                   >
                     Submit Paper
                   </button>
@@ -205,7 +205,7 @@ export default function AuthorOverview() {
                             href={p.fileUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-orange-600 hover:underline"
+                            className="text-[#494623] hover:underline"
                           >
                             View
                           </a>
